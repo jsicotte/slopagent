@@ -97,16 +97,36 @@ TOOL_REGISTRY: dict[str, ToolFunctionAndMetadata] = {
                 name="edit_file",
                 description="""
                     Make changes to a text file.
-                    Replaces "old_str" with "new_str" in a given file. "old_str" and "new_str" must be different from each other.
-                    If the file does not exist, it will be created and will contain "new_str".
+                    Replaces "old_text" with "new_text" in a given file. "old_text" and "new_text" must be different from each other.
+                    If the file does not exist, it will be created and will contain "new_text".
+                    To append a new line to an existing file, first read the file's current
+                    contents, then set "old_text" to that current content and "new_text" to the
+                    current content plus a real newline character plus the new line — do not use
+                    the two-character escape sequence "\\n"; use an actual line break.
                     """,
                 parameters=Tool.Function.Parameters(  # pyright: ignore[reportCallIssue] — ollama's `defs` field uses `Field(None, alias="$defs")`; pyright only infers optionality from `Field(default=...)`, misreporting `$defs` as required.
                     type="object",
                     required=["path_string", "old_text", "new_text"],
                     properties={
                         "path_string": Tool.Function.Parameters.Property(
-                            type="string", description="The fully qualified path to a directory on disk"
-                        )
+                            type="string", description="The fully qualified path to a file on disk"
+                        ),
+                        "old_text": Tool.Function.Parameters.Property(
+                            type="string",
+                            description=(
+                                "The exact existing text in the file to be replaced. Use an "
+                                "empty string only if the file does not exist yet. Contains real "
+                                "line-break characters, never the escape sequence \\n."
+                            ),
+                        ),
+                        "new_text": Tool.Function.Parameters.Property(
+                            type="string",
+                            description=(
+                                "The text that replaces old_text. Must contain real line-break "
+                                "characters when multiple lines are needed, never the escape "
+                                "sequence \\n."
+                            ),
+                        ),
                     },
                 ),
             ),
