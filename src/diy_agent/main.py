@@ -1,3 +1,4 @@
+import argparse
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -150,19 +151,35 @@ def run_agent_turn(messages: list) -> str:
         # Loop: re-call the model so it can incorporate the tool results.
 
 
-# ── main loop ─────────────────────────────────────────────────────────────────
+# ── main ──────────────────────────────────────────────────────────────────────
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="diy-agent")
+    parser.add_argument(
+        "-p",
+        "--prompt",
+        help="Run this single prompt, print the result, and exit (no interactive loop).",
+    )
+    return parser.parse_args()
+
 
 if __name__ == "__main__":
-    messages = []
+    args = parse_args()
 
-    while True:
-        print("You: ", end="", flush=True)
-        user_input = input()
-        if not user_input.strip():
-            continue
+    if args.prompt:
+        messages = [{"role": "user", "content": args.prompt}]
+        print(run_agent_turn(messages))
+    else:
+        messages = []
 
-        messages.append({"role": "user", "content": user_input})
+        while True:
+            print("You: ", end="", flush=True)
+            user_input = input()
+            if not user_input.strip():
+                continue
 
-        reply = run_agent_turn(messages)
+            messages.append({"role": "user", "content": user_input})
 
-        print(f"\nLLM: {reply}\n")
+            reply = run_agent_turn(messages)
+
+            print(f"\nLLM: {reply}\n")
