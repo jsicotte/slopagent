@@ -1,0 +1,2 @@
+# History
+This started out as a python implementation of https://ampcode.com/notes/how-to-build-an-agent. In addition to a learning exercise I also wanted to make my version completely free, so instead of using the Anthropic API I used Ollama with a local model.
